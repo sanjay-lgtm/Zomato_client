@@ -6,14 +6,15 @@ import {
 import ManageResturentForm from "@/forms/manage-resturent-form/ManageResturentForm";
 
 const ManageResturentPage = () => {
-  const { createResturent, isLoading: isCreateLoading } =
-    useCreateMyResturent();
-
-  const { resturent } = useGetMyResturent();
-  const { updateResturent, isLoading: isUpdateLoading } =
-    useUpdateMyResturent();
+  const { createResturent, isLoading: isCreateLoading } = useCreateMyResturent();
+  const { resturent, isLoading: isFetchingResturent } = useGetMyResturent();
+  const { updateResturent, isLoading: isUpdateLoading } = useUpdateMyResturent();
 
   const isEditing = !!resturent;
+
+  if (isFetchingResturent) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <ManageResturentForm
