@@ -9,45 +9,54 @@ import MenSection from "./MenSection";
 import ImageSection from "./ImageSection";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
+import { Restaurant } from "@/types";
 
-const formSchema = z.object({
-  resturantName: z.string({
-    required_error: "restaurentName is required",
-  }),
-  city: z.string({
-    required_error: "city is required",
-  }),
-  country: z.string({
-    required_error: "country is required",
-  }),
-  deliveryPrice: z.coerce.number({
-    required_error: "deliveryPrice is required",
-    invalid_type_error: "must be a valid number",
-  }),
-  estimatedDeliveryTime: z.coerce.number({
-    required_error: "estimatedDeliveryTime is required",
-    invalid_type_error: "must be a valid number",
-  }),
-  cuisines: z.array(z.string()).nonempty({
-    message: "please select at least one item",
-  }),
-  menuItems: z.array(
-    z.object({
-      name: z.string().min(1, "name is required"),
-      price: z.coerce.number().min(1, "Price is required"),
-    })
-  ),
-  imageFile: z.instanceof(File, { message: "image is required" }),
-});
+const formSchema = z
+  .object({
+    resturantName: z.string({
+      required_error: "restaurentName is required",
+    }),
+    city: z.string({
+      required_error: "city is required",
+    }),
+    country: z.string({
+      required_error: "country is required",
+    }),
+    deliveryPrice: z.coerce.number({
+      required_error: "deliveryPrice is required",
+      invalid_type_error: "must be a valid number",
+    }),
+    estimatedDeliveryTime: z.coerce.number({
+      required_error: "estimatedDeliveryTime is required",
+      invalid_type_error: "must be a valid number",
+    }),
+    cuisines: z.array(z.string()).nonempty({
+      message: "please select at least one item",
+    }),
+    menuItems: z.array(
+      z.object({
+        name: z.string().min(1, "name is required"),
+        price: z.coerce.number().min(1, "Price is required"),
+      })
+    ),
+    imageUrl: z.string().optional(),
+    imageFile: z.instanceof(File, { message: "image is required" }),
+  })
+  .refine((data) => data.imageUrl || data.imageFile, {
+    message: "Either image URL or image file must be provided",
+    path: ["imageFile"],
+  });
 
 type ResturentFormData = z.infer<typeof formSchema>;
 
 type Props = {
+  resturent: Restaurant;
   onSave: (resturentFormData: FormData) => void;
   isLoading: boolean;
 };
 
-const ManageResturentForm = ({ onSave, isLoading }: Props) => {
+const ManageResturentForm = ({ onSave, isLoading, resturent }: Props) => {
   const form = useForm<ResturentFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,6 +64,29 @@ const ManageResturentForm = ({ onSave, isLoading }: Props) => {
       menuItems: [{ name: "", price: 0 }],
     },
   });
+
+  useEffect(() => {
+    if (!resturent) {
+      return;
+    }
+
+    const deliveryPriceFormatted = parseInt(
+      (resturent.deliveryPrice / 100).toFixed(2)
+    );
+
+    const menuItemsFormatted = resturent.menuItems.map((item) => ({
+      ...item,
+      price: parseInt((item.price / 100).toFixed(2)),
+    }));
+
+    const updatedResturent = {
+      ...resturent,
+      deliveryPrice: deliveryPriceFormatted,
+      menuItems: menuItemsFormatted,
+    };
+
+    form.reset(updatedResturent);
+  }, [form, resturent]);
 
   const onSubmit = (formDataJson: ResturentFormData) => {
     const formData = new FormData();
@@ -79,7 +111,10 @@ const ManageResturentForm = ({ onSave, isLoading }: Props) => {
         (menuItem.price * 100).toString()
       );
     });
-    formData.append("imageFile", formDataJson.imageFile);
+    if (formDataJson.imageFile) {
+      formData.append("imageFile", formDataJson.imageFile);
+    }
+
     onSave(formData);
   };
   return (
@@ -95,7 +130,7 @@ const ManageResturentForm = ({ onSave, isLoading }: Props) => {
         <MenSection />
         <Separator />
         <ImageSection />
-        {isLoading ? <LoadingButton /> : <Button type="submit" >Submit</Button>}
+        {isLoading ? <LoadingButton /> : <Button type="submit">Submit</Button>}
       </form>
     </Form>
   );
