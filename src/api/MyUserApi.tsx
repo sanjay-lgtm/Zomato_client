@@ -18,7 +18,6 @@ export const useGetUser = () => {
         Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
-      
     });
     if (!response.ok) {
       throw new Error("Failed to get user");
