@@ -10,27 +10,48 @@ import ImageSection from "./ImageSection";
 import LoadingButton from "@/components/LoadingButton";
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { Restaurant } from "@/types";
 
-const formSchema = z.object({
-  resturantName: z.string().nonempty("Restaurant name is required"),
-  city: z.string().nonempty("City is required"),
-  country: z.string().nonempty("Country is required"),
-  deliveryPrice: z.coerce.number().min(0, "Delivery price must be a valid number"),
-  estimatedDeliveryTime: z.coerce.number().min(0, "Estimated delivery time must be a valid number"),
-  cuisines: z.array(z.string()).nonempty("Please select at least one cuisine"),
-  menuItems: z.array(
-    z.object({
-      name: z.string().nonempty("Name is required"),
-      price: z.coerce.number().min(0, "Price is required"),
-    })
-  ).min(1, "Please add at least one menu item"),
-  imageFile: z.instanceof(File, { message: "Image is required" }),
-});
+const formSchema = z
+  .object({
+    resturantName: z.string({
+      required_error: "restaurentName is required",
+    }),
+    city: z.string({
+      required_error: "city is required",
+    }),
+    country: z.string({
+      required_error: "country is required",
+    }),
+    deliveryPrice: z.coerce.number({
+      required_error: "deliveryPrice is required",
+      invalid_type_error: "must be a valid number",
+    }),
+    estimatedDeliveryTime: z.coerce.number({
+      required_error: "estimatedDeliveryTime is required",
+      invalid_type_error: "must be a valid number",
+    }),
+    cuisines: z.array(z.string()).nonempty({
+      message: "please select at least one item",
+    }),
+    menuItems: z.array(
+      z.object({
+        name: z.string().min(1, "name is required"),
+        price: z.coerce.number().min(1, "Price is required"),
+      })
+    ),
+    imageUrl: z.string().optional(),
+    imageFile: z.instanceof(File, { message: "image is required" }),
+  })
+  .refine((data) => data.imageUrl || data.imageFile, {
+    message: "Either image URL or image file must be provided",
+    path: ["imageFile"],
+  });
 
 type ResturentFormData = z.infer<typeof formSchema>;
 
 type Props = {
-  resturent?: Resturant; // Make resturent optional
+  resturent?: Restaurant;
   onSave: (resturentFormData: FormData) => void;
   isLoading: boolean;
 };
@@ -45,12 +66,17 @@ const ManageResturentForm = ({ onSave, isLoading, resturent }: Props) => {
   });
 
   useEffect(() => {
-    if (!resturent) return;
+    if (!resturent) {
+      return;
+    }
 
-    const deliveryPriceFormatted = resturent.deliveryPrice / 100;
+    const deliveryPriceFormatted = parseInt(
+      (resturent.deliveryPrice / 100).toFixed(2)
+    );
+
     const menuItemsFormatted = resturent.menuItems.map((item) => ({
       ...item,
-      price: item.price / 100,
+      price: parseInt((item.price / 100).toFixed(2)),
     }));
 
     const updatedResturent = {
@@ -67,22 +93,30 @@ const ManageResturentForm = ({ onSave, isLoading, resturent }: Props) => {
     formData.append("resturantName", formDataJson.resturantName);
     formData.append("city", formDataJson.city);
     formData.append("country", formDataJson.country);
-    formData.append("deliveryPrice", (formDataJson.deliveryPrice * 100).toString());
-    formData.append("estimatedDeliveryTime", formDataJson.estimatedDeliveryTime.toString());
-
+    formData.append(
+      "deliveryPrice",
+      (formDataJson.deliveryPrice * 100).toString()
+    );
+    formData.append(
+      "estimatedDeliveryTime",
+      formDataJson.estimatedDeliveryTime.toString()
+    );
     formDataJson.cuisines.forEach((cuisine, index) => {
       formData.append(`cuisines[${index}]`, cuisine);
     });
-
     formDataJson.menuItems.forEach((menuItem, index) => {
       formData.append(`menuItems[${index}][name]`, menuItem.name);
-      formData.append(`menuItems[${index}][price]`, (menuItem.price * 100).toString());
+      formData.append(
+        `menuItems[${index}][price]`,
+        (menuItem.price * 100).toString()
+      );
     });
+    if (formDataJson.imageFile) {
+      formData.append("imageFile", formDataJson.imageFile);
+    }
 
-    formData.append("imageFile", formDataJson.imageFile);
     onSave(formData);
   };
-
   return (
     <Form {...form}>
       <form
