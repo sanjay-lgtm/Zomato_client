@@ -8,7 +8,7 @@ const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export const useGetMyResturent = () => {
   const { getAccessTokenSilently } = useAuth0();
 
-  const getMyResturentRequest = async (): Promise<Restaurant> => {
+  const getMyResturentRequest = async (): Promise<Restaurant | undefined> => {
     const accessToken = await getAccessTokenSilently();
     const response = await fetch(`${VITE_API_BASE_URL}/api/my/resturent`, {
       method: "GET",
@@ -17,7 +17,10 @@ export const useGetMyResturent = () => {
       },
     });
     if (!response.ok) {
-      throw new Error("failed to get resturent");
+      if (response.status === 404) {
+        return undefined; // Handle the case where the resturent is not found
+      }
+      throw new Error("Failed to get resturent");
     }
     return response.json();
   };
@@ -58,6 +61,7 @@ export const useCreateMyResturent = () => {
     }
     return response.json();
   };
+
   const {
     mutate: createResturent,
     isLoading,
@@ -66,16 +70,18 @@ export const useCreateMyResturent = () => {
   } = useMutation(createMyResturantRequest);
 
   if (isSuccess) {
-    toast.success("Rsturent created!");
+    toast.success("Resturent created!");
   }
   if (error) {
-    toast.error("unable to create resturent");
+    toast.error("Unable to create resturent");
   }
+
   return { createResturent, isLoading };
 };
 
 export const useUpdateMyResturent = () => {
   const { getAccessTokenSilently } = useAuth0();
+
   const updateMyResturantRequest = async (
     resturentFormData: FormData
   ): Promise<Restaurant> => {
@@ -92,17 +98,20 @@ export const useUpdateMyResturent = () => {
     }
     return response.json();
   };
+
   const {
     mutate: updateResturent,
     isLoading,
     error,
     isSuccess,
   } = useMutation(updateMyResturantRequest);
+
   if (isSuccess) {
-    toast.success("Rsturent updated!");
+    toast.success("Resturent updated!");
   }
   if (error) {
-    toast.error("unable to update resturent");
+    toast.error("Unable to update resturent");
   }
+
   return { updateResturent, isLoading };
 };
