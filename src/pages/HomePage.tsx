@@ -9,6 +9,7 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleSearchSubmit = (searchFormValues: SearchForm) => {
+    setSearchQuery(searchFormValues.searchQuery);
     navigate({
       pathname: `/search/${searchFormValues.searchQuery}`,
     });
