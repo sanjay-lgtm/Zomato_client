@@ -11,7 +11,8 @@ export const useSearchResturents = (
   const createSearchRequest = async (): Promise<RestaurantSearchResponse> => {
     const params = new URLSearchParams();
     params.set("searchQuery", searchState.searchQuery);
-    params.set("page",searchState.page.toString());
+    params.set("page", searchState.page.toString());
+    params.set("selectedCuisines", searchState.selectedCuisines.join(","));
     const response = await fetch(
       `${VITE_API_BASE_URL}/api/resturent/search/${city}?${params.toString()}`
     );
@@ -22,7 +23,7 @@ export const useSearchResturents = (
   };
 
   const { data: results, isLoading } = useQuery(
-    ["searchResturents",searchState],
+    ["searchResturents", searchState],
     createSearchRequest,
     { enabled: !!city }
   );
