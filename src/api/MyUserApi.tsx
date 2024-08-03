@@ -5,13 +5,12 @@ import { toast } from "sonner";
 
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-// getuser api calling
-
-export const useGetUser = () => {
+export const useGetMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const getMyUserRequest = async (): Promise<User> => {
     const accessToken = await getAccessTokenSilently();
+
     const response = await fetch(`${VITE_API_BASE_URL}/api/my/user`, {
       method: "GET",
       headers: {
@@ -19,11 +18,14 @@ export const useGetUser = () => {
         "Content-Type": "application/json",
       },
     });
+
     if (!response.ok) {
-      throw new Error("Failed to get user");
+      throw new Error("Failed to fetch user");
     }
+
     return response.json();
   };
+
   const {
     data: currentUser,
     isLoading,
@@ -34,11 +36,7 @@ export const useGetUser = () => {
     toast.error(error.toString());
   }
 
-  return {
-    currentUser,
-    isLoading,
-    error,
-  };
+  return { currentUser, isLoading };
 };
 
 type CreateUserRequest = {
@@ -46,14 +44,11 @@ type CreateUserRequest = {
   email: string;
 };
 
-// createuser api calling
-
 export const useCreateMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
   const createMyUserRequest = async (user: CreateUserRequest) => {
     const accessToken = await getAccessTokenSilently();
-
     const response = await fetch(`${VITE_API_BASE_URL}/api/my/user`, {
       method: "POST",
       headers: {
@@ -62,10 +57,10 @@ export const useCreateMyUser = () => {
       },
       body: JSON.stringify(user),
     });
+
     if (!response.ok) {
       throw new Error("Failed to create user");
     }
-    return response.json();
   };
 
   const {
@@ -90,8 +85,6 @@ type UpdateMyUserRequest = {
   country: string;
 };
 
-//updateuser api calling
-
 export const useUpdateMyUser = () => {
   const { getAccessTokenSilently } = useAuth0();
 
@@ -110,14 +103,15 @@ export const useUpdateMyUser = () => {
     if (!response.ok) {
       throw new Error("Failed to update user");
     }
+
     return response.json();
   };
 
   const {
     mutateAsync: updateUser,
     isLoading,
-    error,
     isSuccess,
+    error,
     reset,
   } = useMutation(updateMyUserRequest);
 
@@ -130,11 +124,5 @@ export const useUpdateMyUser = () => {
     reset();
   }
 
-  return {
-    updateUser,
-    isLoading,
-    error,
-    isSuccess,
-    reset,
-  };
+  return { updateUser, isLoading };
 };

@@ -4,35 +4,31 @@ import { useQuery } from "react-query";
 
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const useGetResturent = (resturentId?: string) => {
-  const getResturentByIdRequest = async (): Promise<Restaurant> => {
+export const useGetRestaurant = (restaurantId?: string) => {
+  const getRestaurantByIdRequest = async (): Promise<Restaurant> => {
     const response = await fetch(
-      `${VITE_API_BASE_URL}/api/resturent/${resturentId}`
+      `${VITE_API_BASE_URL}/api/restaurant/${restaurantId}`
     );
 
     if (!response.ok) {
-      throw new Error("Failed to get resturent");
+      throw new Error("Failed to get restaurant");
     }
 
     return response.json();
   };
 
-  const { data: resturent, isLoading, error } = useQuery(
-    ["fetchResturent", resturentId],
-    getResturentByIdRequest,
+  const { data: restaurant, isLoading } = useQuery(
+    "fetchRestaurant",
+    getRestaurantByIdRequest,
     {
-      enabled: !!resturentId,
+      enabled: !!restaurantId,
     }
   );
-  if (error) {
-    // Optionally handle the error here or log it
-    console.error(error);
-  }
 
-  return { resturent, isLoading, error };
+  return { restaurant, isLoading };
 };
 
-export const useSearchResturents = (
+export const useSearchRestaurants = (
   searchState: SearchState,
   city?: string
 ) => {
@@ -42,17 +38,20 @@ export const useSearchResturents = (
     params.set("page", searchState.page.toString());
     params.set("selectedCuisines", searchState.selectedCuisines.join(","));
     params.set("sortOption", searchState.sortOption);
+
     const response = await fetch(
-      `${VITE_API_BASE_URL}/api/resturent/search/${city}?${params.toString()}`
+      `${VITE_API_BASE_URL}/api/restaurant/search/${city}?${params.toString()}`
     );
+
     if (!response.ok) {
-      throw new Error("Failed to get resturent");
+      throw new Error("Failed to get restaurant");
     }
+
     return response.json();
   };
 
   const { data: results, isLoading } = useQuery(
-    ["searchResturents", searchState],
+    ["searchRestaurants", searchState],
     createSearchRequest,
     { enabled: !!city }
   );

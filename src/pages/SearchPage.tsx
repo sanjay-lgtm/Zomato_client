@@ -1,10 +1,10 @@
-import { useSearchResturents } from "@/api/ResturentApi";
+import { useSearchRestaurants } from "@/api/RestaurantApi";
 import CuisineFilter from "@/components/CuisineFilter";
 import PaginationSelector from "@/components/PaginationSelector";
 import SearchBar, { SearchForm } from "@/components/SearchBar";
-import SearchResultsCard from "@/components/SearchResultsCard";
-import SearchResultsInfo from "@/components/SearchResultsInfo";
-import SortIOptionDropdown from "@/components/SortIOptionDropdown";
+import SearchResultCard from "@/components/SearchResultCard";
+import SearchResultInfo from "@/components/SearchResultInfo";
+import SortOptionDropdown from "@/components/SortOptionDropdown";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 
@@ -23,8 +23,10 @@ const SearchPage = () => {
     selectedCuisines: [],
     sortOption: "bestMatch",
   });
+
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
-  const { results, isLoading } = useSearchResturents(searchState, city);
+
+  const { results, isLoading } = useSearchRestaurants(searchState, city);
 
   const setSortOption = (sortOption: string) => {
     setSearchState((prevState) => ({
@@ -33,6 +35,7 @@ const SearchPage = () => {
       page: 1,
     }));
   };
+
   const setSelectedCuisines = (selectedCuisines: string[]) => {
     setSearchState((prevState) => ({
       ...prevState,
@@ -40,6 +43,7 @@ const SearchPage = () => {
       page: 1,
     }));
   };
+
   const setPage = (page: number) => {
     setSearchState((prevState) => ({
       ...prevState,
@@ -51,16 +55,9 @@ const SearchPage = () => {
     setSearchState((prevState) => ({
       ...prevState,
       searchQuery: searchFormData.searchQuery,
+      page: 1,
     }));
   };
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!results?.data || !city) {
-    return <span>No Results found!</span>;
-  }
 
   const resetSearch = () => {
     setSearchState((prevState) => ({
@@ -69,8 +66,17 @@ const SearchPage = () => {
       page: 1,
     }));
   };
+
+  if (isLoading) {
+    <span>Loading ...</span>;
+  }
+
+  if (!results?.data || !city) {
+    return <span>No results found</span>;
+  }
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr]">
+    <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-5">
       <div id="cuisines-list">
         <CuisineFilter
           selectedCuisines={searchState.selectedCuisines}
@@ -85,18 +91,19 @@ const SearchPage = () => {
         <SearchBar
           searchQuery={searchState.searchQuery}
           onSubmit={setSearchQuery}
-          placeHolder="Search by Cuisine or resturent name"
+          placeHolder="Search by Cuisine or Restaurant Name"
           onReset={resetSearch}
         />
         <div className="flex justify-between flex-col gap-3 lg:flex-row">
-          <SearchResultsInfo total={results.pagination.total} city={city} />
-          <SortIOptionDropdown
+          <SearchResultInfo total={results.pagination.total} city={city} />
+          <SortOptionDropdown
             sortOption={searchState.sortOption}
             onChange={(value) => setSortOption(value)}
           />
         </div>
-        {results.data.map((resturent) => (
-          <SearchResultsCard resturent={resturent} />
+
+        {results.data.map((restaurant) => (
+          <SearchResultCard restaurant={restaurant} />
         ))}
         <PaginationSelector
           page={results.pagination.page}

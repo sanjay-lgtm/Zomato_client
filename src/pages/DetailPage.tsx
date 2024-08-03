@@ -1,12 +1,12 @@
-import { useGetResturent } from "@/api/ResturentApi";
+import { useGetRestaurant } from "@/api/RestaurantApi";
 import MenuItem from "@/components/MenuItem";
+import OrderSummary from "@/components/OrderSummary";
 import RestaurantInfo from "@/components/RestaurantInfo";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Card, CardFooter } from "@/components/ui/card";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
-import { Card, CardFooter } from "@/components/ui/card";
-import OrderSummary from "@/components/OrderSummary";
-import { MenuItem as MenuItemType } from "@/types";
+import { MenuItem as MenuItemType } from "../types";
 import CheckoutButton from "@/components/CheckoutButton";
 import { UserFormData } from "@/forms/user-profile-form/UserProfileForm";
 import { useCreateCheckoutSession } from "@/api/OrderApi";
@@ -19,13 +19,13 @@ export type CartItem = {
 };
 
 const DetailPage = () => {
-  const { resturentId } = useParams<{ resturentId: string }>();
-
-  const { resturent, isLoading, error } = useGetResturent(resturentId);
-  const { createCheckoutSession, isLoading: isCheckoutLoading } = useCreateCheckoutSession();
+  const { restaurantId } = useParams();
+  const { restaurant, isLoading } = useGetRestaurant(restaurantId);
+  const { createCheckoutSession, isLoading: isCheckoutLoading } =
+    useCreateCheckoutSession();
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const storedCartItems = sessionStorage.getItem(`cartItems-${resturentId}`);
+    const storedCartItems = sessionStorage.getItem(`cartItems-${restaurantId}`);
     return storedCartItems ? JSON.parse(storedCartItems) : [];
   });
 
@@ -56,7 +56,7 @@ const DetailPage = () => {
       }
 
       sessionStorage.setItem(
-        `cartItems-${resturentId}`,
+        `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
       );
 
@@ -71,7 +71,7 @@ const DetailPage = () => {
       );
 
       sessionStorage.setItem(
-        `cartItems-${resturentId}`,
+        `cartItems-${restaurantId}`,
         JSON.stringify(updatedCartItems)
       );
 
@@ -80,8 +80,7 @@ const DetailPage = () => {
   };
 
   const onCheckout = async (userFormData: UserFormData) => {
-    console.log("userFormData",userFormData)
-    if (!resturent) {
+    if (!restaurant) {
       return;
     }
 
@@ -91,7 +90,7 @@ const DetailPage = () => {
         name: cartItem.name,
         quantity: cartItem.quantity.toString(),
       })),
-      resturentId: resturent._id,
+      restaurantId: restaurant._id,
       deliveryDetails: {
         name: userFormData.name,
         addressLine1: userFormData.addressLine1,
@@ -100,38 +99,29 @@ const DetailPage = () => {
         email: userFormData.email as string,
       },
     };
+
     const data = await createCheckoutSession(checkoutData);
     window.location.href = data.url;
   };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error loading restaurant</div>;
-  }
-
-  if (!resturent) {
-    return <div>Restaurant not found</div>;
+  if (isLoading || !restaurant) {
+    return "Loading...";
   }
 
   return (
     <div className="flex flex-col gap-10">
       <AspectRatio ratio={16 / 5}>
         <img
-          src={resturent.imageUrl}
-          alt={resturent.resturantName}
+          src={restaurant.imageUrl}
           className="rounded-md object-cover h-full w-full"
         />
       </AspectRatio>
       <div className="grid md:grid-cols-[4fr_2fr] gap-5 md:px-32">
         <div className="flex flex-col gap-4">
-          <RestaurantInfo restaurant={resturent} />
+          <RestaurantInfo restaurant={restaurant} />
           <span className="text-2xl font-bold tracking-tight">Menu</span>
-          {resturent.menuItems.map((menuItem) => (
+          {restaurant.menuItems.map((menuItem) => (
             <MenuItem
-              key={menuItem._id}
               menuItem={menuItem}
               addToCart={() => addToCart(menuItem)}
             />
@@ -141,7 +131,7 @@ const DetailPage = () => {
         <div>
           <Card>
             <OrderSummary
-              restaurant={resturent}
+              restaurant={restaurant}
               cartItems={cartItems}
               removeFromCart={removeFromCart}
             />

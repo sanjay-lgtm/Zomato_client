@@ -1,5 +1,6 @@
-import LoadingButton from "@/components/LoadingButton";
-import { Button } from "@/components/ui/button";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -10,18 +11,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import LoadingButton from "@/components/LoadingButton";
+import { Button } from "@/components/ui/button";
 import { User } from "@/types";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 const formSchema = z.object({
   email: z.string().optional(),
   name: z.string().min(1, "name is required"),
-  addressLine1: z.string().min(1, "addressLine1 is required"),
-  city: z.string().min(1, "city is required"),
-  country: z.string().min(1, "country is required"),
+  addressLine1: z.string().min(1, "Address Line 1 is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
 });
 
 export type UserFormData = z.infer<typeof formSchema>;
@@ -88,13 +88,14 @@ const UserProfileForm = ({
             </FormItem>
           )}
         />
+
         <div className="flex flex-col md:flex-row gap-4">
           <FormField
             control={form.control}
             name="addressLine1"
             render={({ field }) => (
               <FormItem className="flex-1">
-                <FormLabel>AddressLine1</FormLabel>
+                <FormLabel>Address Line 1</FormLabel>
                 <FormControl>
                   <Input {...field} className="bg-white" />
                 </FormControl>
@@ -102,7 +103,6 @@ const UserProfileForm = ({
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="city"
@@ -116,7 +116,6 @@ const UserProfileForm = ({
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="country"

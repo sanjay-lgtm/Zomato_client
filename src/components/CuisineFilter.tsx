@@ -1,4 +1,4 @@
-import { cuisineList } from "@/config/resturent-options-config";
+import { cuisineList } from "@/config/restaurant-options-config";
 import { Label } from "./ui/label";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { ChangeEvent } from "react";
@@ -41,7 +41,8 @@ const CuisineFilter = ({
           Reset Filters
         </div>
       </div>
-      <div className="space-y-2 flex flex-col mx-5">
+
+      <div className="space-y-2 flex flex-col">
         {cuisineList
           .slice(0, isExpanded ? cuisineList.length : 7)
           .map((cuisine) => {
@@ -90,4 +91,5 @@ const CuisineFilter = ({
     </>
   );
 };
+
 export default CuisineFilter;

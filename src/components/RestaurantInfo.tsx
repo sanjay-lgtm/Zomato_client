@@ -17,7 +17,7 @@ const RestaurantInfo = ({ restaurant }: Props) => {
     <Card className="border-sla">
       <CardHeader>
         <CardTitle className="text-3xl font-bold tracking-tight">
-          {restaurant.resturantName}
+          {restaurant.restaurantName}
         </CardTitle>
         <CardDescription>
           {restaurant.city}, {restaurant.country}

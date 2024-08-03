@@ -11,18 +11,17 @@ import { useFormContext } from "react-hook-form";
 
 const DetailsSection = () => {
   const { control } = useFormContext();
-
   return (
     <div className="space-y-2">
       <div>
         <h2 className="text-2xl font-bold">Details</h2>
         <FormDescription>
-          Enter the details about your resturent.
+          Enter the details about your restaurant
         </FormDescription>
       </div>
       <FormField
         control={control}
-        name="resturantName"
+        name="restaurantName"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Name</FormLabel>
@@ -61,12 +60,13 @@ const DetailsSection = () => {
           )}
         />
       </div>
+
       <FormField
         control={control}
         name="deliveryPrice"
         render={({ field }) => (
           <FormItem className="max-w-[25%]">
-            <FormLabel>Delivery Price (₹)</FormLabel>
+            <FormLabel>Delivery price (£)</FormLabel>
             <FormControl>
               <Input {...field} className="bg-white" placeholder="1.50" />
             </FormControl>
@@ -79,9 +79,9 @@ const DetailsSection = () => {
         name="estimatedDeliveryTime"
         render={({ field }) => (
           <FormItem className="max-w-[25%]">
-            <FormLabel> Estimated Delivery Time (minutes)</FormLabel>
+            <FormLabel>Estimated Delivery Time (minutes)</FormLabel>
             <FormControl>
-              <Input {...field} className="bg-white" placeholder="30 minutes" />
+              <Input {...field} className="bg-white" placeholder="30" />
             </FormControl>
             <FormMessage />
           </FormItem>

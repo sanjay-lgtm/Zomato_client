@@ -19,7 +19,7 @@ const CuisineCheckbox = ({ cuisine, field }: Props) => {
               field.onChange([...field.value, cuisine]);
             } else {
               field.onChange(
-                field.value.filter((value: string) => value != cuisine)
+                field.value.filter((value: string) => value !== cuisine)
               );
             }
           }}
