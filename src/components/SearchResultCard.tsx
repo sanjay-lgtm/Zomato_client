@@ -21,7 +21,7 @@ const SearchResultCard = ({ restaurant }: Props) => {
       </AspectRatio>
       <div>
         <h3 className="text-2xl font-bold tracking-tight mb-2 group-hover:underline">
-          {restaurant.restaurantName}
+          {restaurant.resturantName}
         </h3>
         <div id="card-content" className="grid md:grid-cols-2 gap-2">
           <div className="flex flex-row flex-wrap">
