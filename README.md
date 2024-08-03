@@ -48,7 +48,7 @@ Make sure you have the following installed:
 ### Clone the Repository
 
 ```bash
-git clone [https://github.com/sanjay-lgtm/Zomato_client.git]
+git clone https://github.com/sanjay-lgtm/Zomato_client.git
 cd merneats-frontend
 ```
 
