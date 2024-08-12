@@ -2,6 +2,15 @@
 
 Welcome to the **MernEats Frontend** repository. This project is the frontend part of the MernEats food delivery web application, built with React and Tailwind CSS. This README provides an overview of the frontend project, how to set it up, and the key features of the application.
 
+## server listen URL
+```bash
+  https://zomato-server-api.onrender.com
+```
+## server github URL 
+```bash
+https://github.com/sanjay-lgtm/Zomato_Server_Api
+```
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -97,6 +106,23 @@ src/
 ## Contributing
 
 Contributions are welcome! Please fork the repository and create a pull request with your changes. Ensure your code adheres to the project's coding standards.
+
+## ScreenShots
+## HomePage
+![Zhome](https://github.com/user-attachments/assets/5035702f-4758-42b8-b27a-c5ddadddc4c1)
+
+## manage resturents
+![zmanageres](https://github.com/user-attachments/assets/109ff565-ced8-4b0c-95bd-55d40bcf0daa)
+![zmr2](https://github.com/user-attachments/assets/fb7d73a1-2212-4d8a-8568-895995aac9d8)
+
+## manage users
+![zmu](https://github.com/user-attachments/assets/04650c57-3721-4a11-b0d0-2c1b124ac6a6)
+
+## order status
+
+![zorder](https://github.com/user-attachments/assets/0e9f4238-0469-4095-a0d3-bfb87b5ad464)
+
+
 
 ## License
 
